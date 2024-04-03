@@ -5,60 +5,18 @@ import { useLayoutEffect, useRef } from "react";
 import { twJoin } from "tailwind-merge";
 import { ViaImageElementProps } from "./drop-image";
 import { calculateImageDisplaySize } from "../../../utils";
-import {
-  CrossCircledIcon,
-  InfoCircledIcon,
-  Share2Icon,
-} from "@radix-ui/react-icons";
 import { useHotkeys } from "react-hotkeys-hook";
+import { SideBar } from "./side-bar";
+import { Blur } from "./blur";
 
 type EvenImageProps = Pick<DialogProps, "on"> &
   ViaImageElementProps & { cleanUp?: () => void };
-type SideBarProps = {
-  onClose?: () => void;
-};
 type TermImageProps = { height: number; width: number; src: string } & Pick<
   EvenImageProps,
   "cleanUp"
 >;
 
 const useGesture = createUseGesture([dragAction, pinchAction]);
-
-function SideBar(props: SideBarProps) {
-  const { onClose } = props;
-
-  return (
-    <div className={twJoin("absolute", "right-0")}>
-      <div
-        className={twJoin(
-          "bg-white/75",
-          "backdrop-blur-lg",
-          "mr-2",
-          "box-border",
-          "px-3",
-          "border",
-          "border-solid",
-          "border-neutral-200",
-          "rounded-xl",
-          "box-border"
-        )}
-      >
-        <CrossCircledIcon
-          className={twJoin("my-3", "cursor-pointer")}
-          onClick={onClose}
-        />
-        <Share2Icon
-          className={twJoin(
-            "my-3",
-            true && "cursor-not-allowed",
-            true && "text-neutral-300"
-          )}
-        />
-        <InfoCircledIcon className={twJoin("my-3")} />
-      </div>
-    </div>
-  );
-}
 
 function TermImage(props: TermImageProps) {
   const { height, width, src, cleanUp } = props;
@@ -128,9 +86,6 @@ function TermImage(props: TermImageProps) {
       initialFocus={undefined}
       backdropBackground="backdrop-blur-xl"
       backdrop={true}
-      onClose={() => {
-        console.log("cleanup");
-      }}
     >
       <div
         className={twJoin(
@@ -141,30 +96,32 @@ function TermImage(props: TermImageProps) {
           "items-center"
         )}
       >
-        <animated.div
-          className={twJoin(
-            "cursor-pointer",
-            "relative",
-            "overflow-hidden",
-            "select-none"
-          )}
-          ref={ref}
-          style={{
-            width: width,
-            height: height,
-            ...style,
-          }}
-        >
-          <img
-            className={twJoin("w-full", "h-full", "absolute", "z-0")}
-            src={src}
-            alt=""
-          />
-          <div
-            draggable={false}
-            className={twJoin("w-full", "h-full", "absolute", "z-10")}
-          ></div>
-        </animated.div>
+        <Blur>
+          <animated.div
+            className={twJoin(
+              "cursor-pointer",
+              "relative",
+              "overflow-hidden",
+              "select-none"
+            )}
+            ref={ref}
+            style={{
+              width: width,
+              height: height,
+              ...style,
+            }}
+          >
+            <img
+              className={twJoin("w-full", "h-full", "absolute", "z-0")}
+              src={src}
+              alt=""
+            />
+            <div
+              draggable={false}
+              className={twJoin("w-full", "h-full", "absolute", "z-10")}
+            ></div>
+          </animated.div>
+        </Blur>
 
         <SideBar onClose={cleanUp} />
       </div>
