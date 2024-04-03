@@ -17,6 +17,10 @@ type EvenImageProps = Pick<DialogProps, "on"> &
 type SideBarProps = {
   onClose?: () => void;
 };
+type TermImageProps = { height: number; width: number; src: string } & Pick<
+  EvenImageProps,
+  "cleanUp"
+>;
 
 const useGesture = createUseGesture([dragAction, pinchAction]);
 
@@ -56,21 +60,9 @@ function SideBar(props: SideBarProps) {
   );
 }
 
-export function EvenImage(props: EvenImageProps) {
-  const { on, imageRef, cleanUp } = props;
+function TermImage(props: TermImageProps) {
+  const { height, width, src, cleanUp } = props;
   const ref = useRef<HTMLDivElement>(null);
-  let [height, width] = [0, 0];
-
-  if (on) {
-    const result = calculateImageDisplaySize(
-      imageRef.current!.width,
-      imageRef.current!.height,
-      0.7
-    );
-
-    height = result.height;
-    width = result.width;
-  }
 
   useLayoutEffect(() => {
     const handler = (e: Event) => e.preventDefault();
@@ -93,9 +85,6 @@ export function EvenImage(props: EvenImageProps) {
     rotateZ: 0,
   }));
 
-  useHotkeys("esc", () => {
-    cleanUp?.();
-  });
   useGesture(
     {
       onDrag: ({ pinching, cancel, offset: [x, y] }) => {
@@ -134,53 +123,78 @@ export function EvenImage(props: EvenImageProps) {
   );
 
   return (
-    on && (
-      <Dialog
-        on={on}
-        initialFocus={undefined}
-        backdropBackground="backdrop-blur-xl"
-        backdrop={true}
-        onClose={() => {
-          console.log("cleanup");
-        }}
+    <Dialog
+      on={true}
+      initialFocus={undefined}
+      backdropBackground="backdrop-blur-xl"
+      backdrop={true}
+      onClose={() => {
+        console.log("cleanup");
+      }}
+    >
+      <div
+        className={twJoin(
+          "w-full",
+          "h-full",
+          "flex",
+          "justify-center",
+          "items-center"
+        )}
       >
-        <div
+        <animated.div
           className={twJoin(
-            "w-full",
-            "h-full",
-            "flex",
-            "justify-center",
-            "items-center"
+            "cursor-pointer",
+            "relative",
+            "overflow-hidden",
+            "select-none"
           )}
+          ref={ref}
+          style={{
+            width: width,
+            height: height,
+            ...style,
+          }}
         >
-          <animated.div
-            className={twJoin(
-              "cursor-pointer",
-              "relative",
-              "overflow-hidden",
-              "select-none"
-            )}
-            ref={ref}
-            style={{
-              width: width,
-              height: height,
-              ...style,
-            }}
-          >
-            <img
-              className={twJoin("w-full", "h-full", "absolute", "z-0")}
-              src={imageRef.current?.src}
-              alt=""
-            />
-            <div
-              draggable={false}
-              className={twJoin("w-full", "h-full", "absolute", "z-10")}
-            ></div>
-          </animated.div>
+          <img
+            className={twJoin("w-full", "h-full", "absolute", "z-0")}
+            src={src}
+            alt=""
+          />
+          <div
+            draggable={false}
+            className={twJoin("w-full", "h-full", "absolute", "z-10")}
+          ></div>
+        </animated.div>
 
-          <SideBar onClose={cleanUp} />
-        </div>
-      </Dialog>
-    )
+        <SideBar onClose={cleanUp} />
+      </div>
+    </Dialog>
   );
+}
+
+export function EvenImage(props: EvenImageProps) {
+  const { on, imageRef, cleanUp } = props;
+
+  useHotkeys("esc", () => {
+    cleanUp?.();
+  });
+
+  if (on) {
+    const { height, width } = calculateImageDisplaySize(
+      imageRef.current!.width,
+      imageRef.current!.height,
+      0.7
+    );
+
+    return (
+      <TermImage
+        height={height}
+        width={width}
+        src={imageRef.current!.src}
+        cleanUp={cleanUp}
+      />
+    );
+  }
+
+  return undefined;
 }
