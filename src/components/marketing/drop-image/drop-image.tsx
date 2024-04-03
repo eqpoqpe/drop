@@ -1,43 +1,29 @@
-"use client";
-
-import { twJoin } from "tailwind-merge";
+import { RefObject, useRef, useState } from "react";
+import { DropRecv } from "./drop-recv";
 import { EvenImage } from "./even-image";
 
+export type ViaImageElementProps = { imageRef: RefObject<HTMLImageElement> };
+
 export function DropImage() {
+  const [openEvenImage, setOpenEvenImage] = useState(false);
+  const imageRef = useRef<HTMLImageElement | null>(null);
+
   return (
     <>
-      <EvenImage />
-
-      <div
-        className={twJoin(
-          "w-full",
-          "h-full",
-          "flex",
-          "justify-center",
-          "items-center",
-          "select-none",
-          " text-neutral-500",
-          "flex-col"
-        )}
-        onDrop={async (event) => {
-          event.preventDefault();
-
-          const file = event.dataTransfer.files[0];
-          const img = new Image();
-
-          img.src = "data:image/png;base64," + (await file.text());
-          await img.decode();
+      <EvenImage
+        on={openEvenImage}
+        imageRef={imageRef}
+        cleanUp={() => {
+          imageRef.current = null;
+          setOpenEvenImage(false);
         }}
-        onDragOver={(event) => {
-          event.preventDefault();
+      />
+      <DropRecv
+        onDecoded={({ image }) => {
+          imageRef.current = image;
+          setOpenEvenImage(true);
         }}
-      >
-        <p className={twJoin("mr-2")}>Drop your base64 file here</p>
-
-        <sub className={twJoin("mt-2", "text-neutral-300")}>
-          {"base64 image.jpg > image.jpg.base64"}
-        </sub>
-      </div>
+      />
     </>
   );
 }

@@ -3,13 +3,19 @@ import { router } from "./routers";
 import { Fallback } from "./components/base/fallback/fallback";
 import { IntroAlert } from "./components/base/alerts/intro-alert";
 import "@pretzel-ui/alert/style.css";
+import { PolicyProvider } from "./providers/policy-provider";
+import { getIntroAlertState } from "./utils/storage-detector";
+import { Toaster } from "sonner";
+
+const initialPolicy = () => (getIntroAlertState() === "ALTER" ? true : false);
 
 function App() {
   return (
-    <>
+    <PolicyProvider initialState={initialPolicy}>
+      <Toaster position="top-center" />
       <IntroAlert />
       <RouterProvider router={router} fallbackElement={<Fallback />} />
-    </>
+    </PolicyProvider>
   );
 }
 

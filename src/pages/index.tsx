@@ -2,9 +2,10 @@ import { twJoin } from "tailwind-merge";
 import { MainLayout } from "../layouts/main-layout";
 import { Suspense, lazy } from "react";
 import { Loading } from "../components/base/fallback/loading";
+import { usePolicyContext } from "../providers/policy-provider";
 
 const DropImageLazy = lazy(async () => {
-  // for ux
+  // for ex
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   return import("../components/marketing/drop-image/index");
@@ -18,6 +19,8 @@ export async function loader() {
 }
 
 export function Component() {
+  const { allow } = usePolicyContext();
+
   return (
     <MainLayout>
       <div
@@ -42,9 +45,11 @@ export function Component() {
           "items-center"
         )}
       >
-        <Suspense fallback={<Loading />}>
-          <DropImageLazy />
-        </Suspense>
+        {allow && (
+          <Suspense fallback={<Loading />}>
+            <DropImageLazy />
+          </Suspense>
+        )}
       </div>
     </MainLayout>
   );

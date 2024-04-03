@@ -3,24 +3,23 @@
 import { Alert, AlertResultCallbackFn } from "@pretzel-ui/alert";
 import { twJoin } from "tailwind-merge";
 import Balancer from "react-wrap-balancer";
-import { useState } from "react";
-import { getIntroAlertState } from "../../../utils/storage-detector";
 import { tokens } from "../../../constants";
+import { usePolicyContext } from "../../../providers/policy-provider";
 
 export function IntroAlert() {
-  const [isAlertOn, setIsAlertOn] = useState(getIntroAlertState);
+  const { allow, setAllow } = usePolicyContext();
   const closeHandle = ((result) => {
     if (result.cancel) close();
 
     if (result.confirm) {
-      setIsAlertOn("ALTER");
+      setAllow(true);
       localStorage.setItem(tokens["Intro Alert"], "ALTER");
     }
   }) as AlertResultCallbackFn;
 
   return (
     <Alert
-      on={isAlertOn !== "ALTER"}
+      on={!allow}
       title="Now I Tell You"
       type="help"
       contents={[

@@ -1,15 +1,68 @@
-import { Dialog } from "@pretzel-ui/dialog";
+import { Dialog, DialogProps } from "@pretzel-ui/dialog";
 import { useSpring, animated } from "@react-spring/web";
 import { createUseGesture, dragAction, pinchAction } from "@use-gesture/react";
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { twJoin } from "tailwind-merge";
+import { ViaImageElementProps } from "./drop-image";
+import { calculateImageDisplaySize } from "../../../utils";
+import { CrossCircledIcon, Share2Icon } from "@radix-ui/react-icons";
+
+type EvenImageProps = Pick<DialogProps, "on"> &
+  ViaImageElementProps & { cleanUp?: () => void };
+type SideBarProps = {
+  onClose?: () => void;
+};
 
 const useGesture = createUseGesture([dragAction, pinchAction]);
 
-export function EvenImage() {
-  const ref = useRef<HTMLDivElement>(null);
+function SideBar(props: SideBarProps) {
+  const { onClose } = props;
 
-  useEffect(() => {
+  return (
+    <div className={twJoin("absolute", "right-0")}>
+      <div
+        className={twJoin(
+          "bg-white/75",
+          "backdrop-blur-lg",
+          "mr-2",
+          "box-border",
+          "px-3",
+          "border",
+          "border-solid",
+          "border-neutral-200",
+          "rounded-xl",
+          "box-border"
+        )}
+      >
+        <CrossCircledIcon
+          className={twJoin("my-3", "cursor-pointer")}
+          onClick={onClose}
+        />
+        <Share2Icon
+          className={twJoin("my-3", "cursor-not-allowed", "text-neutral-300")}
+        />
+      </div>
+    </div>
+  );
+}
+
+export function EvenImage(props: EvenImageProps) {
+  const { on, imageRef, cleanUp } = props;
+  const ref = useRef<HTMLDivElement>(null);
+  let [height, width] = [0, 0];
+
+  if (on) {
+    const result = calculateImageDisplaySize(
+      imageRef.current!.width,
+      imageRef.current!.height,
+      0.7
+    );
+
+    height = result.height;
+    width = result.width;
+  }
+
+  useLayoutEffect(() => {
     const handler = (e: Event) => e.preventDefault();
 
     document.addEventListener("gesturestart", handler);
@@ -34,6 +87,7 @@ export function EvenImage() {
     {
       onDrag: ({ pinching, cancel, offset: [x, y] }) => {
         if (pinching) return cancel();
+
         api.start({ x, y });
       },
       onPinch: ({
@@ -62,31 +116,58 @@ export function EvenImage() {
     {
       target: ref,
       drag: { from: () => [style.x.get(), style.y.get()] },
-      pinch: { scaleBounds: { min: 2, max: 20 }, rubberband: true },
+      pinch: { scaleBounds: { min: 1, max: 20 }, rubberband: true },
     }
   );
 
   return (
-    <Dialog
-      on={true}
-      initialFocus={undefined}
-      backdropBackground="backdrop-blur-xl"
-    >
-      <div
-        className={twJoin(
-          "w-full",
-          "h-full",
-          "flex",
-          "justify-center",
-          "items-center"
-        )}
+    on && (
+      <Dialog
+        on={on}
+        initialFocus={undefined}
+        backdropBackground="backdrop-blur-xl"
+        backdrop={true}
+        onClose={() => {
+          console.log("cleanup");
+        }}
       >
-        <animated.div
-          className={twJoin("w-20", "h-20", "bg-red-300", "cursor-pointer")}
-          ref={ref}
-          style={style}
-        ></animated.div>
-      </div>
-    </Dialog>
+        <div
+          className={twJoin(
+            "w-full",
+            "h-full",
+            "flex",
+            "justify-center",
+            "items-center"
+          )}
+        >
+          <animated.div
+            className={twJoin(
+              "cursor-pointer",
+              "relative",
+              "overflow-hidden",
+              "select-none"
+            )}
+            ref={ref}
+            style={{
+              width: width,
+              height: height,
+              ...style,
+            }}
+          >
+            <img
+              className={twJoin("w-full", "h-full", "absolute", "z-0")}
+              src={imageRef.current?.src}
+              alt=""
+            />
+            <div
+              draggable={false}
+              className={twJoin("w-full", "h-full", "absolute", "z-10")}
+            ></div>
+          </animated.div>
+
+          <SideBar onClose={cleanUp} />
+        </div>
+      </Dialog>
+    )
   );
 }

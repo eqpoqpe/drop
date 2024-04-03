@@ -7,7 +7,7 @@ export function MainLayout({ children }: PropsWithChildren) {
   return (
     <main
       className={twJoin(
-        "max-w-4xl",
+        "max-w-3xl",
         "flex",
         "items-center",
         "flex-col",
