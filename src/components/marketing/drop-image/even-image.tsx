@@ -40,7 +40,7 @@ export function EvenImage() {
         origin: [ox, oy],
         first,
         movement: [ms],
-        offset: [s, a],
+        offset: [s],
         memo,
       }) => {
         if (first) {
@@ -54,7 +54,7 @@ export function EvenImage() {
         const x = memo[0] - (ms - 1) * memo[2];
         const y = memo[1] - (ms - 1) * memo[3];
 
-        api.start({ scale: s, rotateZ: a, x, y });
+        api.start({ scale: s, x, y });
 
         return memo;
       },

@@ -4,6 +4,7 @@ import { Suspense, lazy } from "react";
 import { Loading } from "../components/base/fallback/loading";
 
 const DropImageLazy = lazy(async () => {
+  // for ux
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   return import("../components/marketing/drop-image/index");
