@@ -5,7 +5,12 @@ import { useLayoutEffect, useRef } from "react";
 import { twJoin } from "tailwind-merge";
 import { ViaImageElementProps } from "./drop-image";
 import { calculateImageDisplaySize } from "../../../utils";
-import { CrossCircledIcon, Share2Icon } from "@radix-ui/react-icons";
+import {
+  CrossCircledIcon,
+  InfoCircledIcon,
+  Share2Icon,
+} from "@radix-ui/react-icons";
+import { useHotkeys } from "react-hotkeys-hook";
 
 type EvenImageProps = Pick<DialogProps, "on"> &
   ViaImageElementProps & { cleanUp?: () => void };
@@ -39,8 +44,13 @@ function SideBar(props: SideBarProps) {
           onClick={onClose}
         />
         <Share2Icon
-          className={twJoin("my-3", "cursor-not-allowed", "text-neutral-300")}
+          className={twJoin(
+            "my-3",
+            true && "cursor-not-allowed",
+            true && "text-neutral-300"
+          )}
         />
+        <InfoCircledIcon className={twJoin("my-3")} />
       </div>
     </div>
   );
@@ -83,6 +93,9 @@ export function EvenImage(props: EvenImageProps) {
     rotateZ: 0,
   }));
 
+  useHotkeys("esc", () => {
+    cleanUp?.();
+  });
   useGesture(
     {
       onDrag: ({ pinching, cancel, offset: [x, y] }) => {

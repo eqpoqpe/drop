@@ -51,11 +51,9 @@ export function DropRecv(props: DropRecvProps) {
           event.preventDefault();
         }}
       >
-        <p className={twJoin("mr-2")}>Drop your Base64 file here</p>
-
-        <sub className={twJoin("mt-2", "text-neutral-300")}>
-          {"~ ⌘ base64 image.jpg > image.jpg.base64"}
-        </sub>
+        <p className={twJoin("mr-2", "text-neutral-300")}>
+          Drop your Base64 file here
+        </p>
       </div>
     );
   }
