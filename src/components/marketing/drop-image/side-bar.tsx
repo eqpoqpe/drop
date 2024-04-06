@@ -13,14 +13,16 @@ export function SideBar(props: SideBarProps) {
   const { onClose } = props;
 
   return (
-    <div className={twJoin("absolute", "right-0")}>
+    <div className={twJoin("absolute", "bottom-0")}>
       <div
         className={twJoin(
+          "flex",
+          "flex-row",
           "bg-white/75",
           "backdrop-blur-lg",
-          "mr-2",
+          "mb-2",
           "box-border",
-          "px-3",
+          "py-3",
           "border",
           "border-solid",
           "border-neutral-200",
@@ -29,17 +31,17 @@ export function SideBar(props: SideBarProps) {
         )}
       >
         <CrossCircledIcon
-          className={twJoin("my-3", "cursor-pointer")}
+          className={twJoin("mx-3", "cursor-pointer")}
           onClick={onClose}
         />
         <Share2Icon
           className={twJoin(
-            "my-3",
+            "mx-3",
             true && "cursor-not-allowed",
             true && "text-neutral-300"
           )}
         />
-        <InfoCircledIcon className={twJoin("my-3")} />
+        <InfoCircledIcon className={twJoin("mx-3")} />
       </div>
     </div>
   );
