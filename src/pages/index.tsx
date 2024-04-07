@@ -5,16 +5,11 @@ import { Loading } from "../components/base/fallback/loading";
 import { usePolicyContext } from "../providers/policy-provider";
 
 const DropImageLazy = lazy(async () => {
-  // for ex
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
   return import("../components/marketing/drop-image/index");
 });
 
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader() {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
   return {};
 }
 

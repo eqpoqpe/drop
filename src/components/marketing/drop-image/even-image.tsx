@@ -84,7 +84,7 @@ function TermImage(props: TermImageProps) {
     <Dialog
       on={true}
       initialFocus={undefined}
-      backdropBackground="backdrop-blur-xl"
+      backdropBackground={twJoin("backdrop-blur-xl", "bg-black/95")}
       backdrop={true}
     >
       <div
