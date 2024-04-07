@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { twJoin } from "tailwind-merge";
 import { Loading } from "../../base/fallback/loading";
 import { toast } from "sonner";
+import { useToggle } from "usehooks-ts";
 
 type DropRecvProps = {
   onDecoded?: (event: { image: HTMLImageElement }) => void;
@@ -9,7 +9,7 @@ type DropRecvProps = {
 
 export function DropRecv(props: DropRecvProps) {
   const { onDecoded } = props;
-  const [decoding, setDecoding] = useState(false);
+  const [decoding, , setDecoding] = useToggle(false);
 
   if (decoding) {
     return <Loading />;

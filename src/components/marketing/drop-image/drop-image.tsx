@@ -1,11 +1,12 @@
-import { RefObject, useRef, useState } from "react";
+import { RefObject, useRef } from "react";
 import { DropRecv } from "./drop-recv";
 import { EvenImage } from "./even-image";
+import { useToggle } from "usehooks-ts";
 
 export type ViaImageElementProps = { imageRef: RefObject<HTMLImageElement> };
 
 export function DropImage() {
-  const [openEvenImage, setOpenEvenImage] = useState(false);
+  const [openEvenImage, , setOpenEvenImage] = useToggle(false);
   const imageRef = useRef<HTMLImageElement | null>(null);
 
   return (
