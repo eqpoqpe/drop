@@ -37,7 +37,6 @@ export function DropRecv(props: DropRecvProps) {
           setDecoding(true);
 
           try {
-            await new Promise((resolve) => setTimeout(resolve, 300));
             await img.decode();
 
             onDecoded?.({ image: img });
